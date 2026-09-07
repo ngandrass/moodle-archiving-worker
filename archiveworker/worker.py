@@ -147,7 +147,7 @@ def handle_status():
     for job in job_queue_copy:
         jobs_queued_ids.append(job.id)
 
-    # Determin worker status based on its processing and queued jobs
+    # Determine worker status based on its processing and queued jobs
     current_queue_size = len(jobs_queued_ids)
     occupancy = len(jobs_processing_ids)
     status = WorkerStatus.UNKNOWN
