@@ -118,7 +118,7 @@ class AssignArchiveJob(ArchiveJob):
         :return: None
         """
         # Retrieve submission data and setup workspace
-        folder_name, submission_name, submission_html, submission_attachments = self.moodle_api.get_submission_data(
+        folder_name, submission_name, submission_html, submission_attachments = self.moodle_api.generate_submission_report(
             self.get_id(),
             self.descr,
             submissionid

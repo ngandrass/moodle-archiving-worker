@@ -115,7 +115,7 @@ class QuizArchiveJob(ArchiveJob):
         :return: None
         """
         # Retrieve attempt data and setup workspace
-        folder_name, attempt_name, attempt_html, attempt_attachments = self.moodle_api.get_attempt_data(
+        folder_name, attempt_name, attempt_html, attempt_attachments = self.moodle_api.generate_attempt_report(
             self.get_id(),
             self.descr,
             attemptid

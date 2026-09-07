@@ -51,7 +51,7 @@ class MoodleQuizAPIBase(MoodleAPIBase):
         pass
 
     @abstractmethod
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,

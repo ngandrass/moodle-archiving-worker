@@ -190,7 +190,7 @@ class ArchivingmodAssignMoodleAPI(MoodleAPIBase):
     ) -> MoodleBackupStatus:
         raise NotImplementedError('Archivingmod Assign API does not support handling Moodle backups')
 
-    def get_submission_data(
+    def generate_submission_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,

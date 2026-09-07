@@ -218,7 +218,7 @@ class QuizArchiverMoodleAPI(MoodleQuizAPIBase):
 
         return metadata
 
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,
