@@ -3,6 +3,7 @@
 ## Version X.Y.Z (YYYY-MM-DD)
 
 - Add support for assignment submission archiving through `archivingmod_assign`
+- Fix typo in `GET /status` endpoint error messages
 - Internal refactoring of Moodle and worker API request/response handling
 
 
