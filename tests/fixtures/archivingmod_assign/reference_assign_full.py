@@ -56,7 +56,7 @@ ARCHIVE_API_REQUEST = {
         "fetch_metadata": True,
         "foldername_pattern": "submission_${submissionid}",
         "filename_pattern": "submission_${submissionid}",
-        "attachments": {
+        "attachment_types": {
             "assignment": True,
             "submission": True,
             "feedback": True,

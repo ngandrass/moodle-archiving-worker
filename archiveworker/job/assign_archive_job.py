@@ -79,7 +79,7 @@ class AssignArchiveJob(ArchiveJob):
                     task['paper_format'],
                     task['keep_html_files'],
                     task['image_optimize'],
-                    task['attachments']
+                    task['attachment_types']
                 )
 
                 # Report status

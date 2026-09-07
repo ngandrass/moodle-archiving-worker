@@ -76,7 +76,7 @@ class ArchivingmodAssignArchiveRequest(ArchiveRequest):
             submissionids=json['job']['submissionids'],
             sections=json['job']['report_sections'],
             fetch_metadata=json['job']['fetch_metadata'],
-            attachments=json['job']['attachments'],
+            attachment_types=json['job']['attachment_types'],
             paper_format=PaperFormat[json['job']['paper_format']],
             keep_html_files=json['job']['keep_html_files'],
             foldername_pattern=json['job']['foldername_pattern'],

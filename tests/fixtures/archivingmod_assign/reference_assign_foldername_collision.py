@@ -52,7 +52,7 @@ ARCHIVE_API_REQUEST = {
         "fetch_metadata": True,
         "foldername_pattern": "collision",
         "filename_pattern": "collision",
-        "attachments": {
+        "attachment_types": {
             "assignment": False,
             "submission": False,
             "feedback": False,

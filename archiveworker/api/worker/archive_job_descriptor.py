@@ -159,7 +159,7 @@ class ArchiveJobDescriptor:
         submissionids: List[int],
         sections: Dict,
         fetch_metadata: bool,
-        attachments: Dict,
+        attachment_types: Dict,
         paper_format: PaperFormat,
         keep_html_files: bool,
         foldername_pattern: str,
@@ -175,7 +175,7 @@ class ArchiveJobDescriptor:
         :param submissionids: List of submission IDs to archive
         :param sections: Submission report sections to include
         :param fetch_metadata: Whether to fetch and export submission metadata
-        :param attachments: Map of attachment type to whether that type should be downloaded
+        :param attachment_types: Map of attachment type to whether that type should be downloaded
         :param paper_format: Paper format to use for the PDF (e.g. 'A4')
         :param keep_html_files: Whether to keep the raw HTML DOM of each submission
         :param foldername_pattern: Pattern to generate the folder name for each submission
@@ -195,7 +195,7 @@ class ArchiveJobDescriptor:
             raise ValueError('Submission report sections are invalid.')
         if not isinstance(fetch_metadata, bool):
             raise ValueError('Fetch metadata flag is invalid.')
-        if not isinstance(attachments, object) or len(attachments) == 0:
+        if not isinstance(attachment_types, object) or len(attachment_types) == 0:
             raise ValueError('Attachment type selection is invalid.')
         if not isinstance(paper_format, PaperFormat):
             raise ValueError('Paper format is invalid.')
@@ -221,7 +221,7 @@ class ArchiveJobDescriptor:
             'submissionids': submissionids,
             'sections': sections,
             'fetch_metadata': fetch_metadata,
-            'attachments': attachments,
+            'attachment_types': attachment_types,
             'paper_format': paper_format,
             'keep_html_files': keep_html_files,
             'foldername_pattern': foldername_pattern,

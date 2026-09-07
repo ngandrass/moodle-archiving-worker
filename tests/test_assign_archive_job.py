@@ -67,7 +67,7 @@ class TestAssignArchiveJob:
         """
         Generates expected archive entries (path/name, without extension
         variants) given a job description. Attachments are filtered according
-        to the job's "attachments" type selection, exactly like the job would.
+        to the job's "attachment_types" type selection, exactly like the job would.
 
         :param jobjson: Job API request
         :param moodle_api_mock: Mock of the Moodle API client
@@ -76,7 +76,7 @@ class TestAssignArchiveJob:
         archive_flatten = jobjson['job']['archive_flatten']
         organizer = FlatArchiveOrganizer() if archive_flatten else HierarchicalArchiveOrganizer()
         workspace = Workspace()
-        attachment_types = jobjson['job']['attachments']
+        attachment_types = jobjson['job']['attachment_types']
 
         def _build_archive_entry(artifact) -> str:
             path, name = organizer.organize(artifact)
@@ -111,7 +111,7 @@ class TestAssignArchiveJob:
     ) -> dict[str, str]:
         """
         Generates archive entries for every attachment the Moodle API would
-        return, regardless of the job's "attachments" type selection. Useful
+        return, regardless of the job's "attachment_types" type selection. Useful
         to assert that disabled attachment types are absent from the archive.
 
         :param jobjson: Job API request
@@ -241,7 +241,7 @@ class TestAssignArchiveJob:
     @pytest.mark.parametrize("archive_flatten", [False, True], ids=["flatten=false", "flatten=true"])
     def test_archive_full_assignment_attachment_filtering(self, client, archive_flatten) -> None:
         """
-        Tests that disabling attachment types in the job's "attachments"
+        Tests that disabling attachment types in the job's "attachment_types"
         setting causes the worker to skip downloading those attachment types,
         while still downloading the enabled ones.
 
@@ -251,7 +251,7 @@ class TestAssignArchiveJob:
         with fixtures.reference_assign_full.MoodleAPIMock() as mock:
             jobjson = deepcopy(fixtures.reference_assign_full.ARCHIVE_API_REQUEST)
             jobjson['job']['archive_flatten'] = archive_flatten
-            jobjson['job']['attachments'] = {
+            jobjson['job']['attachment_types'] = {
                 "assignment": True,
                 "submission": False,
                 "feedback": True,
@@ -289,7 +289,7 @@ class TestAssignArchiveJob:
 
                 # Disabled attachment types must be absent
                 for entry, attachment_type in all_attachment_entries.items():
-                    if not jobjson['job']['attachments'].get(attachment_type, True):
+                    if not jobjson['job']['attachment_types'].get(attachment_type, True):
                         assert entry not in archive_names, \
                             f'Archive contains attachment of disabled type "{attachment_type}": {entry}'
 
