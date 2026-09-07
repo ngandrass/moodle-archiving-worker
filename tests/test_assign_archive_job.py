@@ -84,7 +84,7 @@ class TestAssignArchiveJob:
 
         expected_entries = []
         for submissionid in jobjson['job']['submissionids']:
-            folder_name, name, _, attachments = moodle_api_mock.get_submission_data(None, None, submissionid)
+            folder_name, name, _, attachments = moodle_api_mock.generate_submission_report(None, None, submissionid)
             submission = workspace.submission(submissionid, name, folder_name)
 
             if jobjson['job']['keep_html_files']:
@@ -124,7 +124,7 @@ class TestAssignArchiveJob:
 
         entries = {}
         for submissionid in jobjson['job']['submissionids']:
-            folder_name, name, _, attachments = moodle_api_mock.get_submission_data(None, None, submissionid)
+            folder_name, name, _, attachments = moodle_api_mock.generate_submission_report(None, None, submissionid)
             submission = workspace.submission(submissionid, name, folder_name)
 
             for attachment in attachments:

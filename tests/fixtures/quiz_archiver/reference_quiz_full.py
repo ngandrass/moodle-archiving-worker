@@ -92,7 +92,7 @@ class MoodleAPIMock(MoodleQuizAttemptAPIMockBase):
 
     RESOURCE_BASE = 'tests/resources/reference_quiz_full'
 
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,
@@ -102,7 +102,7 @@ class MoodleAPIMock(MoodleQuizAttemptAPIMockBase):
             with open(f'{self.RESOURCE_BASE}/attempts/{attemptid}.html', 'r') as f:
                 return f'attempt-{attemptid}', f'attempt-{attemptid}', f.read(), []
 
-        super().get_attempt_data(jobid, jobdescriptor, attemptid)
+        super().generate_attempt_report(jobid, jobdescriptor, attemptid)
 
     def get_attempts_metadata(
             self,

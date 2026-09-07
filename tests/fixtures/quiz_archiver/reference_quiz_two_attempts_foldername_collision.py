@@ -57,7 +57,7 @@ ARCHIVE_API_REQUEST = {
 
 class MoodleAPIMock(reference_quiz_full.MoodleAPIMock):
 
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,
@@ -67,4 +67,4 @@ class MoodleAPIMock(reference_quiz_full.MoodleAPIMock):
             with open(f'{self.RESOURCE_BASE}/attempts/{attemptid}.html', 'r') as f:
                 return f'foo', f'attempt', f.read(), []
 
-        return super().get_attempt_data(jobid, jobdescriptor, attemptid)
+        return super().generate_attempt_report(jobid, jobdescriptor, attemptid)

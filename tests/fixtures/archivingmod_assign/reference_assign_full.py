@@ -118,9 +118,9 @@ class MoodleAPIMock(MoodleAPIMockBase):
 
     def __init__(self):
         super().__init__()
-        self.patchers['get_submission_data'] = patch(
-            self.CLS_ROOT + '.get_submission_data',
-            new=self.get_submission_data
+        self.patchers['generate_submission_report'] = patch(
+            self.CLS_ROOT + '.generate_submission_report',
+            new=self.generate_submission_report
         )
         self.patchers['get_submissions_metadata'] = patch(
             self.CLS_ROOT + '.get_submissions_metadata',
@@ -131,7 +131,7 @@ class MoodleAPIMock(MoodleAPIMockBase):
             new=self.download_moodle_file
         )
 
-    def get_submission_data(
+    def generate_submission_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,

@@ -90,7 +90,7 @@ class TestQuizArchiveJob:
 
             for attempt_id in task_attempts['attemptids']:
 
-                attempt_mock_directory, attempt_mock_name, _, _ = moodle_api_mock.get_attempt_data(None, None, attempt_id)
+                attempt_mock_directory, attempt_mock_name, _, _ = moodle_api_mock.generate_attempt_report(None, None, attempt_id)
                 attempt = workspace.attempt(attempt_id, attempt_mock_name, attempt_mock_directory)
 
                 html_artifact = attempt.html_report(f'{attempt_mock_name}.html')

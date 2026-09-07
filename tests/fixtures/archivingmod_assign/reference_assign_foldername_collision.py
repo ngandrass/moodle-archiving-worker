@@ -64,7 +64,7 @@ ARCHIVE_API_REQUEST = {
 
 class MoodleAPIMock(reference_assign_full.MoodleAPIMock):
 
-    def get_submission_data(
+    def generate_submission_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,
@@ -73,7 +73,7 @@ class MoodleAPIMock(reference_assign_full.MoodleAPIMock):
         if submissionid in [201, 202]:
             return 'collision', 'collision', reference_assign_full.SUBMISSION_REPORT_HTML, []
 
-        return super().get_submission_data(jobid, jobdescriptor, submissionid)
+        return super().generate_submission_report(jobid, jobdescriptor, submissionid)
 
     def get_submissions_metadata(
             self,

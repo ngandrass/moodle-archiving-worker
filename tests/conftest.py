@@ -247,7 +247,7 @@ class MoodleQuizAttemptAPIMockBase(MoodleAPIMockBase):
     def __init__(self):
         super().__init__()
         self.patchers['get_attempts_metadata'] = patch(self.CLS_ROOT+'.get_attempts_metadata', new=self.get_attempts_metadata)
-        self.patchers['get_attempt_data'] = patch(self.CLS_ROOT+'.get_attempt_data', new=self.get_attempt_data)
+        self.patchers['generate_attempt_report'] = patch(self.CLS_ROOT+'.generate_attempt_report', new=self.generate_attempt_report)
 
     def get_attempts_metadata(
             self,
@@ -256,10 +256,10 @@ class MoodleQuizAttemptAPIMockBase(MoodleAPIMockBase):
     ) -> List[Dict[str, str]]:
         raise NotImplementedError('get_attempts_metadata')
 
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,
             attemptid: int
     ) -> Tuple[str, str, str, List[Dict[str, str]]]:
-        raise NotImplementedError('get_attempt_data')
+        raise NotImplementedError('generate_attempt_report')
