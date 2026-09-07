@@ -69,6 +69,30 @@ class TestHierarchicalArchiveOrganizer:
             assert path == ""
             assert name == "notes.txt"
 
+    def test_place_submission_reports_in_submission_folder(self) -> None:
+        """Submission report artifacts should be grouped by their submission directory."""
+
+        with Workspace() as workspace:
+            submission = workspace.submission(7, "Submission 7", "submission-7")
+            artifact = submission.pdf_report("report.pdf")
+
+            path, name = HierarchicalArchiveOrganizer().organize(artifact)
+
+            assert path == "submissions/submission-7"
+            assert name == "report.pdf"
+
+    def test_place_submission_attachments_in_type_folder(self) -> None:
+        """Submission attachments should be organized under the submission folder and type subfolder."""
+
+        with Workspace() as workspace:
+            submission = workspace.submission(9, "Attachment submission", "submission-9")
+            artifact = submission.attachment("feedback", "comment.txt")
+
+            path, name = HierarchicalArchiveOrganizer().organize(artifact)
+
+            assert path == "submissions/submission-9/feedback"
+            assert name == "comment.txt"
+
 
 class TestFlatArchiveOrganizer:
     """Tests for the flat archive organizer."""
@@ -118,30 +142,6 @@ class TestFlatArchiveOrganizer:
 
             assert path == ""
             assert name == "notes.txt"
-
-    def test_place_submission_reports_in_submission_folder(self) -> None:
-        """Submission report artifacts should be grouped by their submission directory."""
-
-        with Workspace() as workspace:
-            submission = workspace.submission(7, "Submission 7", "submission-7")
-            artifact = submission.pdf_report("report.pdf")
-
-            path, name = HierarchicalArchiveOrganizer().organize(artifact)
-
-            assert path == "submissions/submission-7"
-            assert name == "report.pdf"
-
-    def test_place_submission_attachments_in_type_folder(self) -> None:
-        """Submission attachments should be organized under the submission folder and type subfolder."""
-
-        with Workspace() as workspace:
-            submission = workspace.submission(9, "Attachment submission", "submission-9")
-            artifact = submission.attachment("feedback", "comment.txt")
-
-            path, name = HierarchicalArchiveOrganizer().organize(artifact)
-
-            assert path == "submissions/submission-9/feedback"
-            assert name == "comment.txt"
 
     def test_prefixes_submission_report_names(self) -> None:
         """Submission report artifacts should be prefixed with submission id to avoid collisions."""
