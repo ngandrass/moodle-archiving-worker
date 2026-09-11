@@ -22,10 +22,10 @@ from uuid import UUID
 from archiveworker.type import JobStatus, MoodleBackupStatus
 from archiveworker.api.worker import ArchiveJobDescriptor
 
-from . import MoodleAPIBase
+from . import MoodleQuizAPIBase
 
 
-class QuizArchiverMoodleAPI(MoodleAPIBase):
+class QuizArchiverMoodleAPI(MoodleQuizAPIBase):
     """
     Adapter for the quiz_archiver plugin Moodle web service API
     """
@@ -218,7 +218,7 @@ class QuizArchiverMoodleAPI(MoodleAPIBase):
 
         return metadata
 
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,

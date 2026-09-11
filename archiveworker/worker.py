@@ -30,8 +30,7 @@ from http import HTTPStatus
 import waitress
 from flask import Flask, make_response, request, jsonify
 
-from archiveworker.api.worker import QuizArchiverArchiveRequest, ArchiveRequest
-from archiveworker.api.worker.archivingmod_quiz import ArchivingmodQuizArchiveRequest
+from archiveworker.api.worker import *
 from archiveworker.interruptable_thread import InterruptableThread
 from archiveworker.job import ArchiveJob
 from archiveworker.type import WorkerStatus, JobStatus, WorkerThreadInterrupter
@@ -111,7 +110,7 @@ def handle_status():
         current_jobs_mutex.release()
     else:
         response = error_response(
-            "503 Service Unavailable (could not aquire current jobs lock)",
+            "503 Service Unavailable (could not acquire current jobs lock)",
             HTTPStatus.SERVICE_UNAVAILABLE
         )
         response.headers["Retry-After"] = 10
@@ -133,7 +132,7 @@ def handle_status():
         job_queue.mutex.release()
     else:
         response = error_response(
-            "503 Service Unavailable (could not aquire job queue lock)",
+            "503 Service Unavailable (could not acquire job queue lock)",
             HTTPStatus.SERVICE_UNAVAILABLE
         )
         response.headers["Retry-After"] = 10
@@ -148,7 +147,7 @@ def handle_status():
     for job in job_queue_copy:
         jobs_queued_ids.append(job.id)
 
-    # Determin worker status based on its processing and queued jobs
+    # Determine worker status based on its processing and queued jobs
     current_queue_size = len(jobs_queued_ids)
     occupancy = len(jobs_processing_ids)
     status = WorkerStatus.UNKNOWN
@@ -204,6 +203,15 @@ def handle_archive_request_archivingmod_quiz():
     :return:
     """
     return _handle_archive_request(ArchivingmodQuizArchiveRequest)
+
+
+@app.post('/archive/archivingmod_assign')
+def handle_archive_request_archivingmod_assign():
+    """
+    Handles the archive request for the archivingmod_assign API
+    :return:
+    """
+    return _handle_archive_request(ArchivingmodAssignArchiveRequest)
 
 
 def _handle_archive_request(apicls: type[ArchiveRequest]):

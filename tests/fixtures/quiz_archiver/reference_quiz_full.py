@@ -23,7 +23,7 @@ from uuid import UUID
 
 from archiveworker.api.worker import QuizArchiverArchiveRequest, ArchiveJobDescriptor
 from config import Config
-from tests.conftest import MoodleAPIMockBase
+from tests.conftest import MoodleQuizAttemptAPIMockBase
 
 ARCHIVE_API_REQUEST = {
     "api_version": QuizArchiverArchiveRequest.API_VERSION,
@@ -86,13 +86,13 @@ ARCHIVE_API_REQUEST = {
 }
 
 
-class MoodleAPIMock(MoodleAPIMockBase):
+class MoodleAPIMock(MoodleQuizAttemptAPIMockBase):
 
     CLS_ROOT = 'archiveworker.api.moodle.QuizArchiverMoodleAPI'
 
     RESOURCE_BASE = 'tests/resources/reference_quiz_full'
 
-    def get_attempt_data(
+    def generate_attempt_report(
             self,
             jobid: UUID,
             jobdescriptor: ArchiveJobDescriptor,
@@ -102,7 +102,7 @@ class MoodleAPIMock(MoodleAPIMockBase):
             with open(f'{self.RESOURCE_BASE}/attempts/{attemptid}.html', 'r') as f:
                 return f'attempt-{attemptid}', f'attempt-{attemptid}', f.read(), []
 
-        super().get_attempt_data(jobid, jobdescriptor, attemptid)
+        super().generate_attempt_report(jobid, jobdescriptor, attemptid)
 
     def get_attempts_metadata(
             self,

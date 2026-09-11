@@ -1,5 +1,12 @@
 # Changelog
 
+## Version X.Y.Z (YYYY-MM-DD)
+
+- Add support for assignment submission archiving through `archivingmod_assign`
+- Fix typo in `GET /status` endpoint error messages
+- Internal refactoring of Moodle and worker API request/response handling
+
+
 ## Version 5.0.0 (2026-08-11)
 
 - **⚠️ BREAKING ⚠️** Renamed project from "Moodle Quiz Archive Worker" to "Moodle Archiving Worker" to reflect generalized future support for Moodle activities beyond `mod_quiz`
