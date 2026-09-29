@@ -7,6 +7,7 @@
 - Properly reject pending Moodle AJAX requests when preventing redirects to the login page, so that dependent JavaScript code keeps running
 - Fix typo in `GET /status` endpoint error messages
 - Internal refactoring of Moodle and worker API request/response handling
+- Update Python dependencies
 
 
 ## Version 5.0.0 (2026-08-11)
