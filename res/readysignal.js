@@ -42,21 +42,29 @@ const SIGNAL_MATHJAX_FOUND = "x-moodle-archiver-mathjax-found";
 const SIGNAL_MATHJAX_NOT_FOUND = "x-moodle-archiver-mathjax-not-found";
 const SIGNAL_MATHJAX_NO_FORMULAS_ON_PAGE = "x-moodle-archiver-mathjax-no-formulas-on-page";
 const SIGNAL_MATHJAX_READY_FOR_EXPORT = "x-moodle-archiver-mathjax-ready-for-export";
+const SIGNAL_VPLQUESTION_FOUND = "x-moodle-archiver-vplquestion-found";
+const SIGNAL_VPLQUESTION_NOT_FOUND = "x-moodle-archiver-vplquestion-not-found";
+const SIGNAL_VPLQUESTION_EDITOR_RESIZED = "x-moodle-archiver-vplquestion-editor-resized";
+const SIGNAL_VPLQUESTION_READY_FOR_EXPORT = "x-moodle-archiver-vplquestion-ready-for-export";
 
 /**
  * Global object to store readiness signals for different components.
  *
- * @type {{readySignals: {geogebra: null, mathjax: null}}}
+ * @type {{readySignals: {geogebra: null, mathjax: null, vplquestion: null}}}
  */
 window.MoodleArchiver = {
     initialized: false,         // True if the readiness detection process has been initialized
     readySignals: {
         mathjax: null,          // True if MathJax is ready for export, null if MathJax is not found
-        geogebra: null          // True if GeoGebra is ready for export, null if GeoGebra is not found
+        geogebra: null,         // True if GeoGebra is ready for export, null if GeoGebra is not found
+        vplquestion: null       // True if VPL Question is ready for export, null if VPL Question is not found
     },
     states: {                   // Optional stateful data for different components
         geogebra: {
             last_mutation: null // Timestamp of the last mutation of a GeoGebra applet
+        },
+        vplquestion: {
+            expected_editors: 0 // Number of VPL Question code editors expected on the page
         }
     }
 };
@@ -115,6 +123,20 @@ function detectAndPrepareReadinessComponents() {
         attachGeogebraMutationObserver();
     } else {
         console.log(SIGNAL_GEOGEBRA_NOT_FOUND);
+    }
+
+    // VPL Question (Asynchronously rendered Ace editors)
+    const vplEditorCount = document.querySelectorAll('.que.vplquestion textarea[data-role="code-editor"]').length;
+    if (vplEditorCount > 0) {
+        window.MoodleArchiver.readySignals.vplquestion = false;
+        window.MoodleArchiver.states.vplquestion.expected_editors = vplEditorCount;
+        console.log(SIGNAL_VPLQUESTION_FOUND);
+        console.debug(`Detected ${vplEditorCount} VPL Question code editor(s)`);
+
+        // Attach observer to wait for Ace editors to be rendered by qtype_vplquestion before doing anything
+        attachVplQuestionEditorRenderingObserver();
+    } else {
+        console.log(SIGNAL_VPLQUESTION_NOT_FOUND);
     }
 
     window.MoodleArchiver.initialized = true;
@@ -200,6 +222,64 @@ function detectGeogebraFinishedRendering() {
         window.MoodleArchiver.readySignals.geogebra = false;
         setTimeout(detectGeogebraFinishedRendering, MOODLE_ARCHIVER_READINESS_PROBE_INTERVAL_MS);
     }
+}
+
+/**
+ * Waits for all VPL Question Ace editors to be rendered.
+ *
+ * Once all editors are rendered, soft wrapping is enabled and a resize handler
+ * for the upcoming print reflow is attached.
+ *
+ * Results are stored inside window.MoodleArchiver.readySignals.vplquestion.
+ */
+function attachVplQuestionEditorRenderingObserver() {
+    // Detect rendered Ace editors. We need the placeholder element to get the actual editor element ...
+    const actualEditors = Array.from(document.querySelectorAll('.que.vplquestion .ace-placeholder.ace_editor'))
+        .map(placeholder => ({placeholder, editor: placeholder.env ? placeholder.env.editor : undefined}))
+        .filter(({editor}) => typeof editor !== 'undefined' && editor.renderer.lineHeight > 0);
+
+    // Compare currently rendered editors against the expected number
+    const expectedEditors = window.MoodleArchiver.states.vplquestion.expected_editors;
+    if (actualEditors.length < expectedEditors) {
+        console.log(`Only ${actualEditors.length} of ${expectedEditors} VPL Question editors rendered yet. Waiting ...`);
+        setTimeout(attachVplQuestionEditorRenderingObserver, MOODLE_ARCHIVER_READINESS_PROBE_INTERVAL_MS);
+        return;
+    }
+
+    // All expected editors are actually rendered
+    // We must attach the handler for the print layout because it again reflows the page
+    actualEditors.forEach(({editor}) => editor.getSession().setUseWrapMode(true));
+    window.matchMedia('print').addEventListener('change', (e) => {
+        if (e.matches) {
+            actualEditors.forEach(({placeholder, editor}) => fitVplQuestionEditorToContent(placeholder, editor));
+        }
+    });
+
+    window.MoodleArchiver.readySignals.vplquestion = true;
+    console.log(SIGNAL_VPLQUESTION_READY_FOR_EXPORT);
+}
+
+/**
+ * Resizes the container of the given Ace editor to fit its whole content
+ * without scrolling, based on the current width of the container.
+ *
+ * @param {HTMLElement} placeholder The Ace editor container element
+ * @param {Object} editor The Ace editor instance
+ */
+function fitVplQuestionEditorToContent(placeholder, editor) {
+    const renderer = editor.renderer;
+    editor.resize(true); // Re-wrap lines for the current container width
+
+    const lines = editor.getSession().getScreenLength();
+    const hScroll = renderer.$horizScroll ? renderer.scrollBarH.getHeight() : 0;
+    const border = placeholder.offsetHeight - placeholder.clientHeight;
+    const height = Math.ceil(lines * renderer.lineHeight + renderer.scrollMargin.v + hScroll + border);
+
+    placeholder.style.height = height + 'px';
+    editor.resize(true);
+
+    console.log(SIGNAL_VPLQUESTION_EDITOR_RESIZED);
+    console.debug(`Resized VPL Question editor #${placeholder.id} to ${height}px (${lines} lines).`);
 }
 
 /**
