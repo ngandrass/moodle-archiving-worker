@@ -138,6 +138,10 @@ async def render_html_to_pdf(
         Intercepting the request after it fired may lead to situations where the HTML DOM of the page
         is already destructed, leading to empty pages and thus to blank PDF files.
 
+        Moodle's core/ajax does not reject the pending AJAX promises when redirecting to the login
+        page. Therefore, the redirect is replaced by code that rejects all pending deferreds of the
+        failed AJAX call, so that dependent JavaScript code keeps running inside the worker.
+
         :param route: Playwright route to intercept
         :return: None
         """
@@ -149,7 +153,8 @@ async def render_html_to_pdf(
             body_original = await response.text()
             body_patched = re.sub(
                 r'window\.location\s*=\s*URL\.relativeUrl\(\"/login/index.php\"\)',
-                'console.warn("Prevented redirect to /login/index.php")',
+                '(console.warn("Prevented redirect to /login/index.php: ", exception, "Rejecting pending AJAX requests"), '
+                '(Array.isArray(this) && this.forEach(function(r){ r && r.deferred && r.deferred.reject(exception); })))',
                 body_original
             )
 
