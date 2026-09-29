@@ -14,20 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Poetry
         run: pipx install poetry
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
           cache: 'poetry'
 
       - name: Install Python dependencies
         run: |
-          poetry config virtualenvs.create false
           poetry install --no-root --with dev
 
       - name: Initialize playwright
