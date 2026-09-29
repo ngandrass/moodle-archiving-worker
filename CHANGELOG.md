@@ -2,9 +2,9 @@
 
 ## Version X.Y.Z (YYYY-MM-DD)
 
-- Add support for assignment submission archiving through `archivingmod_assign`
 - Add support for `qtype_vplquestion` Ace code editors asynchronous rendering to the readiness probe
 - Properly reject pending Moodle AJAX requests when preventing redirects to the login page, so that dependent JavaScript code keeps running
+- Add support for assignment submission archiving through `archivingmod_assign`
 - Fix typo in `GET /status` endpoint error messages
 - Internal refactoring of Moodle and worker API request/response handling
 - Update Python dependencies
