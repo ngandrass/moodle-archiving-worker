@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYY-MM-DD)
+## Version 5.1.0 (2026-10-02)
 
 - Add support for `qtype_vplquestion` Ace code editors asynchronous rendering to the readiness probe
 - Properly reject pending Moodle AJAX requests when preventing redirects to the login page, so that dependent JavaScript code keeps running
