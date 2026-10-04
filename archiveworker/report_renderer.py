@@ -158,6 +158,16 @@ async def render_html_to_pdf(
                 body_original
             )
 
+            # Moodle >= 5.3: core/ajax now is an ESM module that redirects via `redirect(relativeUrl(...))` if
+            # the request fails with `exception.errorcode === "servicerequireslogin"`.
+            # Function names are mangled by minification, so we instead neutralize the errorcode comparison
+            # instead. This makes core/ajax fall through to its own branch that rejects all pending requests.
+            body_patched = re.sub(
+                r'(\.errorcode\s*===?\s*)(["\'])servicerequireslogin\2',
+                r'\1\2servicerequireslogin_redirect_disabled_by_archiver\2',
+                body_patched
+            )
+
             if body_patched != body_original:
                 logger.debug(f'Disabled javascript login page redirection code in {route.request.url}')
 
@@ -178,6 +188,8 @@ async def render_html_to_pdf(
         if Config.PREVENT_REDIRECT_TO_LOGIN:
             await bctx.route('**/login/*.php', __login_redirection_interceptor)
             await bctx.route('**/*.js', __javascript_redirection_patcher)
+            # Moodle >= 5.3 serves ESM modules via /esm/{revision}/{specifier} without a .js suffix
+            await bctx.route(re.compile(r'.*/esm/-?\d+/.*'), __javascript_redirection_patcher)
 
         # Load HTML
         await page.goto(f"{base_url}/mock/attempt")

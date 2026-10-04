@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYY-MM-DD)
+
+- Fix AJAX call handling for Moodle >= 5.3 ESM modules to prevent generation of empty reports
+
+
 ## Version 5.1.0 (2026-10-02)
 
 - Add support for `qtype_vplquestion` Ace code editors asynchronous rendering to the readiness probe
