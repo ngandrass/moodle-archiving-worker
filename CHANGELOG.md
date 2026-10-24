@@ -1,5 +1,10 @@
 # Changelog
 
+## Version X.Y.Z (YYYY-MM-DD)
+
+- Update Python dependencies
+
+
 ## Version 5.1.1 (2026-10-04)
 
 - Fix AJAX call handling for Moodle >= 5.3 ESM modules to prevent generation of empty reports
