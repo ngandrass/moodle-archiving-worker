@@ -3,6 +3,9 @@
 ## Version X.Y.Z (YYYY-MM-DD)
 
 - Update Python dependencies
+  - Update `certifi` CA cert bundles
+  - Fix various CVEs in `pypdf` package
+  - Fix various CVEs in `pillow` package
 
 
 ## Version 5.1.1 (2026-10-04)
