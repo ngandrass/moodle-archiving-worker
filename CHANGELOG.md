@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYY-MM-DD)
+## Version 5.1.2 (2026-10-24)
 
 - Update Python dependencies
   - Update `certifi` CA cert bundles
