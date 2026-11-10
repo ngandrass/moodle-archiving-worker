@@ -1,5 +1,11 @@
 # Changelog
 
+## Version X.Y.Z (YYYY-MM-DD)
+
+- Migrate to new PyPDF major version 7
+- Update Python dependencies
+
+
 ## Version 5.1.2 (2026-10-24)
 
 - Update Python dependencies
