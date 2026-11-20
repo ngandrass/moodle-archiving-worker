@@ -1,6 +1,6 @@
 # Changelog
 
-## Version X.Y.Z (YYYY-MM-DD)
+## Version 5.1.4 (2026-11-20)
 
 - Replace Moodle polyfill usage in readiness probe with vanilla JS for Moodle 6.0 compatibility (Thanks to @PhMemmel !)
 - Fix race condition in readiness probe for MathJax >= 3 loading (Thanks to @PhMemmel !)
