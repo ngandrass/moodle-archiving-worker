@@ -85,29 +85,8 @@ function detectAndPrepareReadinessComponents() {
             console.log(SIGNAL_MATHJAX_NO_FORMULAS_ON_PAGE);
             console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
         } else {
-            // Formulas found. Wait for MathJax to process them.
-            let mjVersion = window.MathJax.version
-            if (mjVersion.startsWith('2')) {
-                console.debug("MathJax version '" + mjVersion + "' detected. Waiting for MathJax to process equations ...");
-                window.MathJax.Hub.Queue(function () {
-                    window.MoodleArchiver.readySignals.mathjax = true;
-                    console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
-                });
-                window.MathJax.Hub.processSectionDelay = 0;
-            } else if (mjVersion.startsWith('3') || mjVersion.startsWith('4')) {
-                console.debug("MathJax version '" + mjVersion + "' detected. Waiting for MathJax to process equations ...");
-                window.MathJax.startup.promise.then(() => {
-                    window.MoodleArchiver.readySignals.mathjax = true;
-                    console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
-                });
-            } else {
-                console.error("Unknown MathJax version '" + mjVersion + "' detected");
-                console.debug("Just waiting 3 seconds ...")
-                setTimeout(() => {
-                    window.MoodleArchiver.readySignals.mathjax = true;
-                    console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
-                }, 3000 );
-            }
+            // Formulas found. Wait for MathJax to be loaded and to process them.
+            waitForMathJax();
         }
     } else {
         console.log(SIGNAL_MATHJAX_NOT_FOUND);
@@ -143,6 +122,62 @@ function detectAndPrepareReadinessComponents() {
 }
 
 /**
+ * Waits for MathJax to be fully loaded and to finish typesetting all formulas.
+ *
+ * Moodle's filter_mathjaxloader first sets window.MathJax to a plain config
+ * object and loads the actual MathJax library asynchronously afterwards. Until
+ * then, window.MathJax.version is undefined, so we need to poll for it.
+ *
+ * Results are stored inside window.MoodleArchiver.readySignals.mathjax.
+ */
+function waitForMathJax() {
+    const mjVersion = window.MathJax.version;
+    if (typeof mjVersion !== 'string') {
+        console.log("MathJax library not loaded yet. Waiting ...");
+        setTimeout(waitForMathJax, MOODLE_ARCHIVER_READINESS_PROBE_INTERVAL_MS);
+        return;
+    }
+
+    if (mjVersion.startsWith('2')) {
+        console.debug("MathJax version '" + mjVersion + "' detected. Waiting for MathJax to process equations ...");
+        window.MathJax.Hub.Queue(function () {
+            window.MoodleArchiver.readySignals.mathjax = true;
+            console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
+        });
+        window.MathJax.Hub.processSectionDelay = 0;
+    } else if (mjVersion.startsWith('3') || mjVersion.startsWith('4')) {
+        console.debug("MathJax version '" + mjVersion + "' detected. Waiting for MathJax to process equations ...");
+        waitForMathJaxStartupPromise();
+    } else {
+        console.error("Unknown MathJax version '" + mjVersion + "' detected");
+        console.debug("Just waiting 3 seconds ...")
+        setTimeout(() => {
+            window.MoodleArchiver.readySignals.mathjax = true;
+            console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
+        }, 3000 );
+    }
+}
+
+/**
+ * Waits for the MathJax (>= 3) startup promise to resolve.
+ *
+ * Moodle chains each typeset call onto window.MathJax.startup.promise and
+ * replaces the promise. Therefore, we re-check after resolution whether the
+ * promise was replaced in the meantime and wait for the new one if so.
+ */
+function waitForMathJaxStartupPromise() {
+    const promise = window.MathJax.startup.promise;
+    promise.then(() => {
+        if (window.MathJax.startup.promise !== promise) {
+            waitForMathJaxStartupPromise();
+            return;
+        }
+        window.MoodleArchiver.readySignals.mathjax = true;
+        console.log(SIGNAL_MATHJAX_READY_FOR_EXPORT);
+    });
+}
+
+/**
  * Waits for GeoGebra to be initialized to the point where it rendered its final
  * applet frames and attach mutation observers to them.
  *
@@ -160,7 +195,7 @@ function attachGeogebraMutationObserver() {
                 let allFramesLoaded = true;
 
                 // Ensure that all frames are fully loaded (contain 'jsloaded' class)
-                ggbFrames.forEach(ggbFrame => {
+                Array.from(ggbFrames).forEach(ggbFrame => {
                     frameNumber++;
 
                     if (ggbFrame.classList.contains('jsloaded') !== true) {
@@ -176,7 +211,7 @@ function attachGeogebraMutationObserver() {
                         console.log(SIGNAL_GEOGEBRA_MUTATED);
                     });
 
-                    document.getElementsByClassName('GeoGebraFrame').forEach(ggbFrame => {
+                    Array.from(document.getElementsByClassName('GeoGebraFrame')).forEach(ggbFrame => {
                         mutationObserver.observe(ggbFrame, { childList: true, subtree: true });
                         console.log("Attached mutation observer to GeoGebra frame.");
                     });
